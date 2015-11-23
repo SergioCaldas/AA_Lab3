@@ -1,15 +1,15 @@
-CC              =       icc
-CFLAGS          =      -openmp -O3 -no-vec -vec-report=3
+CC              =       gcc
+CFLAGS          =      -fopenmp -O3 -ftree-vectorize 
 FC		=	ifort
-FFLAGS		=      -align array64byte -openmp -O3 -vec-report=3
-USER = ????
+FFLAGS		=      -array64byte -fopenmp -O3 -vec-report=3
+USER = a59905
 MICDIR          =      /home/$(USER)
 MICLIBS		=      /opt/intel/composer_xe_2013.1.117/compiler/lib/mic/
 
 #-no-vec
 
 hflops1: helloflops1.c
-	$(CC) $(CFLAGS) -mmic helloflops1.c -o helloflops1_xphi
+	$(CC) $(CFLAGS) helloflops1.c -o helloflops1_xphi
 
 hflops3o: helloflops3offload.c
 	$(CC) $(CFLAGS) helloflops3offload.c -o helloflops3o_xeon

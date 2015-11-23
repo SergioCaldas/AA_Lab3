@@ -1,0 +1,7 @@
+Without vec
+GFlops = 25.600, Secs = 19.058, GFlops per sec = 1.343
+
+Vec
+GFlops = 25.600, Secs = 4.193, GFlops per sec = 6.105
+	Com vectorização o programa é 4.5 vezes mais rapido do que com
+	vectorização...
