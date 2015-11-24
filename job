@@ -33,16 +33,12 @@
 
 module purge
 module load intel/2013.1.117
-module load gnu/4.7.2
 
 echo "Done Loading Modules..."
 
 export MIC LD LIBRARY PATH=/opt/intel/composer_xe_2013.1.117/compiler/lib/mic/
 
 echo "Done Exporting Libs..."
-
-make clean
-make 
 
 read -r node_info<$PBS_NODEFILE
 

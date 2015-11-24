@@ -67,7 +67,8 @@ int main(int argc, char *argv[] )
 		#pragma omp parallel for private ( j , k )
 		for ( i = 0 ; i < NUM_THREADS; i++) {
 			int  tid = omp_get_thread_num();
-			for(j=0; j<MAXFLOPS_ITERS; j++)  
+			int tille = tid*LOOP_COUNT;			
+for(j=0; j<MAXFLOPS_ITERS; j++)  
 			{
 				//
 				// scale 1st array and add in the 2nd array
@@ -75,7 +76,7 @@ int main(int argc, char *argv[] )
 				//
 				for(k=0; k<LOOP_COUNT; k++)  
 				{
-					fa[k+(tid*LOOP_COUNT)] = a * fa[k+(tid*LOOP_COUNT)] + fb[k+(tid*LOOP_COUNT)];
+					fa[k+tille] = a * fa[k+tille] + fb[k+tille];
 				}
 			}
 		}
