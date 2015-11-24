@@ -19,11 +19,11 @@
 //
 double dtime()
 {
-  double tseconds = 0.0;
-  struct timeval mytime;
-  gettimeofday(&mytime,(struct timezone*)0);
-  tseconds = (double)(mytime.tv_sec + mytime.tv_usec*1.0e-6);
-  return( tseconds );
+	double tseconds = 0.0;
+	struct timeval mytime;
+	gettimeofday(&mytime,(struct timezone*)0);
+	tseconds = (double)(mytime.tv_sec + mytime.tv_usec*1.0e-6);
+	return( tseconds );
 }
 
 
@@ -42,63 +42,63 @@ float fb[FLOPS_ARRAY_SIZE] __attribute__((align(64)));
 // 
 int main(int argc, char *argv[] ) 
 {
-  int i,j,k;
-  double tstart, tstop, ttime;
-  double gflops = 0.0;
-  float a=1.1;
+	int i,j,k;
+	double tstart, tstop, ttime;
+	double gflops = 0.0;
+	float a=1.1;
 
 
-  //
-  // initialize the compute arrays 
-  //
+	//
+	// initialize the compute arrays 
+	//
 
-  printf("Initializing\r\n");
-  for(i=0; i<FLOPS_ARRAY_SIZE; i++)
-  {
-    fa[i] = (float)i + 0.1;
-    fb[i] = (float)i + 0.2;
-  }	
+	printf("Initializing\r\n");
+	for(i=0; i<FLOPS_ARRAY_SIZE; i++)
+	{
+		fa[i] = (float)i + 0.1;
+		fb[i] = (float)i + 0.2;
+	}	
 
-  printf("Starting Compute\r\n");
+	printf("Starting Compute\r\n");
 
-  tstart = dtime();	
-  // loop many times to really get lots of calculations - SAXPY part!
+	tstart = dtime();	
+	// loop many times to really get lots of calculations - SAXPY part!
 #pragma omp parallel
-  {
-    omp_set_num_threads(NUM_THREADS);
-    for ( i = 0 ; i < NUM_THREADS; ++) {
-      tid = omp_get_thread_num();
+	{
+		omp_set_num_threads(NUM_THREADS);
+		for ( i = 0 ; i < NUM_THREADS; i++) {
+			int  tid = omp_get_thread_num();
 #pragma omp for private(j)
-      for(j=tid; j<MAXFLOPS_ITERS; j+= LOOP_COUNT)  
-      {
-        //
-        // scale 1st array and add in the 2nd array
-        // example usage - y = mx + b; 
-        //
+			for(j=tid*LOOP_COUNT; j<MAXFLOPS_ITERS; j+= (LOOP_COUNT + LOOP_COUNT*tid))  
+			{
+				//
+				// scale 1st array and add in the 2nd array
+				// example usage - y = mx + b; 
+				//
 #pragma omp for private (k)
-        for(k=0; k<LOOP_COUNT; k++)  
-        {
-          fa[k] = a * fa[k] + fb[k];
-        }
-      }
-    }
-  }
-  tstop = dtime();
+				for(k=0; k<LOOP_COUNT; k++)  
+				{
+					fa[k] = a * fa[k] + fb[k];
+				}
+			}
+		}
+	}
+	tstop = dtime();
 
-  // # of gigaflops we just calculated  
-  gflops = (double)( 1.0e-9*LOOP_COUNT*MAXFLOPS_ITERS*FLOPSPERCALC);    
+	// # of gigaflops we just calculated  
+	gflops = (double)( 1.0e-9*LOOP_COUNT*MAXFLOPS_ITERS*FLOPSPERCALC);    
 
-  // elasped time
-  ttime = tstop - tstart;
+	// elasped time
+	ttime = tstop - tstart;
 
-  //
-  // Print the results
-  //
-  if ((ttime) > 0.0)
-  {
-    printf("GFlops = %10.3lf, Secs = %10.3lf, GFlops per sec = %10.3lf\r\n",
-        gflops, ttime, gflops/ttime);
-  }	 
-  return( 0 );
+	//
+	// Print the results
+	//
+	if ((ttime) > 0.0)
+	{
+		printf("GFlops = %10.3lf, Secs = %10.3lf, GFlops per sec = %10.3lf\r\n",
+				gflops, ttime, gflops/ttime);
+	}	 
+	return( 0 );
 }
 
