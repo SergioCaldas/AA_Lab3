@@ -63,26 +63,22 @@ int main(int argc, char *argv[] )
 
 	tstart = dtime();	
 	// loop many times to really get lots of calculations - SAXPY part!
-#pragma omp parallel
-	{
 		omp_set_num_threads(NUM_THREADS);
+		#pragma omp parallel for private ( j , k )
 		for ( i = 0 ; i < NUM_THREADS; i++) {
 			int  tid = omp_get_thread_num();
-#pragma omp for private(j)
-			for(j=tid*LOOP_COUNT; j<MAXFLOPS_ITERS; j+= (LOOP_COUNT + LOOP_COUNT*tid))  
+			for(j=0; j<MAXFLOPS_ITERS; j++)  
 			{
 				//
 				// scale 1st array and add in the 2nd array
 				// example usage - y = mx + b; 
 				//
-#pragma omp for private (k)
 				for(k=0; k<LOOP_COUNT; k++)  
 				{
-					fa[k] = a * fa[k] + fb[k];
+					fa[k+(tid*LOOP_COUNT)] = a * fa[k+(tid*LOOP_COUNT)] + fb[k+(tid*LOOP_COUNT)];
 				}
 			}
 		}
-	}
 	tstop = dtime();
 
 	// # of gigaflops we just calculated  
